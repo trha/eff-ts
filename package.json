@@ -4,7 +4,8 @@
   "description": "First order, deterministic effect system for TS",
   "main": "index.js",
   "scripts": {
-    "test": "tsc"
+    "test": "tsc",
+    "format": "prettier --write src/*.ts"
   },
   "author": "Hoang Anh Trinh <trha@outlook.com>",
   "license": "MIT",
@@ -13,6 +14,7 @@
   },
   "devDependencies": {
     "@tsconfig/node14": "^1.0.0",
+    "prettier": "^2.2.1",
     "typescript": "4.1.3"
   }
 }

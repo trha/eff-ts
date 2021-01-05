@@ -49,9 +49,11 @@ async function runAsync<T>(eff: Effect<Async, T>): Promise<T> {
 
 function* race<T1, T2, Effs>(
   first: Effect<Async | Effs, T1>,
-  second: Effect<Async | Effs, T2>,
+  second: Effect<Async | Effs, T2>
 ): Effect<Async | Effs, Either.Either<T1, T2>> {
-  type GenState = { tag: "Pending" } | { tag: "Blocking"; promise: Promise<any> };
+  type GenState =
+    | { tag: "Pending" }
+    | { tag: "Blocking"; promise: Promise<any> };
   let firstState: GenState = { tag: "Pending" };
   let secondState: GenState = { tag: "Pending" };
 
@@ -104,13 +106,13 @@ function* race<T1, T2, Effs>(
         Either.Either<T1, T2>
       > = yield new Async(
         Promise.race([
-          firstState.promise.then(Either.left, err => {
+          firstState.promise.then(Either.left, (err) => {
             throw Either.left(err);
           }),
-          secondState.promise.then(Either.right, err => {
+          secondState.promise.then(Either.right, (err) => {
             throw Either.right(err);
           }),
-        ]),
+        ])
       );
 
       switch (result._tag) {
@@ -147,7 +149,7 @@ function* race<T1, T2, Effs>(
 
 function* all<T1, T2, Eff>(
   first: Effect<Async | Eff, T1>,
-  second: Effect<Async | Eff, T2>,
+  second: Effect<Async | Eff, T2>
 ): Effect<Async | Eff, [T1, T2]> {
   type GenState<R> =
     | { tag: "Pending" }
@@ -220,7 +222,11 @@ function* all<T1, T2, Eff>(
 
       case "Blocking":
         if (firstState.tag === "Done") {
-          for (secondReq = second.next(yield new Async(secondState.promise)); ; ) {
+          for (
+            secondReq = second.next(yield new Async(secondState.promise));
+            ;
+
+          ) {
             if (secondReq.done === true) {
               secondState = { tag: "Done", result: secondReq.value };
               break;
@@ -233,15 +239,18 @@ function* all<T1, T2, Eff>(
 
     if (firstState.tag === "Blocking" && secondState.tag === "Blocking") {
       // Can't make further progress.
-      const result: Either.Either<Either.Either<unknown, unknown>, [T1, T2]> = yield new Async(
+      const result: Either.Either<
+        Either.Either<unknown, unknown>,
+        [T1, T2]
+      > = yield new Async(
         Promise.all([
-          firstState.promise.catch(err => {
+          firstState.promise.catch((err) => {
             throw Either.left(err);
           }),
-          secondState.promise.catch(err => {
+          secondState.promise.catch((err) => {
             throw Either.right(err);
           }),
-        ]),
+        ])
       );
 
       switch (result._tag) {
@@ -268,4 +277,3 @@ function* all<T1, T2, Eff>(
     }
   }
 }
-
