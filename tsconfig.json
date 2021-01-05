@@ -1,0 +1,12 @@
+{ "extends": "@tsconfig/node14/tsconfig.json"
+, "compilerOptions": 
+  { "module": "commonjs"
+  , "noImplicitAny": true
+  , "sourceMap": true
+  , "incremental": true
+  , "strict": true
+  , "target": "ES2015"
+  , "outDir": "./dist"
+  }
+, "exclude": [ "dist/**" ]
+}
